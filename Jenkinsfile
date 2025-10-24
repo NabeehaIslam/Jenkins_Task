@@ -1,51 +1,52 @@
 pipeline {
     agent any
-    
+
     tools {
-        nodejs 'NodeJS'
+        nodejs 'NodeJS'   // Must match the name you set in Jenkins > Tools
     }
-    
+
     parameters {
-        string(name: 'BRANCH_NAME', defaultValue: 'main')
-        string(name: 'BUILD_ENV', defaultValue: 'dev')
-        string(name: 'STUDENT_NAME', defaultValue: 'Nabeeha Islam')
+        string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Branch to build')
+        string(name: 'BUILD_ENV', defaultValue: 'dev', description: 'Environment (dev/prod)')
+        string(name: 'STUDENT_NAME', defaultValue: 'Your Name', description: 'Provide your name (required for marks)')
     }
-    
+
     environment {
         APP_VERSION = "1.0.0"
     }
-    
+
     stages {
+
         stage('Install Dependencies') {
             steps {
                 echo "Installing Node.js dependencies..."
                 bat "npm install"
             }
         }
-        
+
         stage('Build') {
             steps {
                 echo "Building Calculator App v${APP_VERSION} on branch ${params.BRANCH_NAME}"
             }
         }
-        
+
         stage('Unit Test') {
             when {
                 expression { return params.BUILD_ENV == 'dev' }
             }
             steps {
-                echo 'Running unit tests with Jest...'
+                echo "Running unit tests with Jest..."
                 bat "npm test"
             }
         }
-        
+
         stage('Deploy') {
             steps {
-                echo 'Simulating deployment of Node.js Calculator App...'
+                echo "Simulating deployment of Node.js Calculator App..."
             }
         }
     }
-    
+
     post {
         always {
             echo 'Cleaning up workspace...'
