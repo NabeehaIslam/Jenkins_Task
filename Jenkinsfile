@@ -1,52 +1,58 @@
 pipeline {
     agent any
-
+    
     tools {
-        maven 'Maven'   // Must match the name from Jenkins "Global Tool Configuration"
+        nodejs 'NodeJS'
     }
-
+    
     parameters {
-        string(name: 'BRANCH_NAME', defaultValue: 'main', description: 'Git branch to build')
-        string(name: 'BUILD_ENV', defaultValue: 'dev', description: 'Build environment (dev/prod)')
+        string(name: 'BRANCH_NAME', defaultValue: 'main')
+        string(name: 'BUILD_ENV', defaultValue: 'dev')
+        string(name: 'STUDENT_NAME', defaultValue: 'Nabeeha Islam')
     }
-
+    
     environment {
-        NEW_VERSION = "1.3.0"
+        APP_VERSION = "1.0.0"
     }
-
+    
     stages {
-
-        stage('Build') {
+        stage('Install Dependencies') {
             steps {
-                echo "Building version ${NEW_VERSION} on branch ${params.BRANCH_NAME}"
-                // Uncomment below line once Maven is configured properly
-                // bat "mvn clean package -Dversion=${NEW_VERSION}"
+                echo "Installing Node.js dependencies..."
+                bat "npm install"
             }
         }
-
+        
+        stage('Build') {
+            steps {
+                echo "Building Calculator App v${APP_VERSION} on branch ${params.BRANCH_NAME}"
+            }
+        }
+        
         stage('Unit Test') {
             when {
                 expression { return params.BUILD_ENV == 'dev' }
             }
             steps {
-                echo 'Running unit tests...'
+                echo 'Running unit tests with Jest...'
+                bat "npm test"
             }
         }
-
+        
         stage('Deploy') {
             steps {
-                echo 'Deploying application...'
+                echo 'Simulating deployment of Node.js Calculator App...'
             }
         }
     }
-
+    
     post {
         always {
             echo 'Cleaning up workspace...'
             // deleteDir()
         }
         success {
-            echo 'Pipeline succeeded.'
+            echo 'Pipeline executed successfully.'
         }
         failure {
             echo 'Pipeline failed.'
